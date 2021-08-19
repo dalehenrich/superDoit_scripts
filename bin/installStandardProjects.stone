@@ -2,6 +2,9 @@
 usage
 -----
 USAGE $basename [--help | -h] [--debug | -D] <project-names> [-- [<stone-name> [<topaz-command-line-args>] ] ]
+      $basename superDoit -- <stone-name>
+      $basename t2f2t -- <stone-name>
+      $basename gsteststats -- <stone-name>
 
 DESCRIPTION
   Install named projects (superDoit, t2f2t, gsteststats, etc.) into a Rowan stone. Projects are expected to already be present in $ROWAN_PROJECTS_HOME.
@@ -21,6 +24,7 @@ OPTIONS
   -D, --debug                bring up topaz debugger in the event of a script error
 
 EXAMPLES
+  $basename superDoit t2f2t gsteststats
   $basename superDoit
   $basename t2f2t
   $basename gsteststats
