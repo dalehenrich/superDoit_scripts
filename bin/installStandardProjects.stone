@@ -1,0 +1,69 @@
+#!/usr/bin/env superdoit_stone
+usage
+-----
+USAGE $basename [--help | -h] [--debug | -D] <project-names> [-- [<stone-name> [<topaz-command-line-args>] ] ]
+
+DESCRIPTION
+  Install named projects (superDoit, t2f2t, gsteststats, etc.) into a Rowan stone. Projects are expected to already be present in $ROWAN_PROJECTS_HOME.
+
+  KNOWN PROJECTS
+    superDoit   - https://github.com/dalehenrich/superDoit
+    t2f2t       - https://github.com/GsDevKit/T2F2T-Conversion
+    gsteststats - https://github.com/dalehenrich/GsTestStats
+
+OPTIONS
+  <stone-name>               Name of the GsDevKit_home stone. <stone-name> argument
+                             may be skipped if the script is run in a GsDevKit_home
+                             stone directory (i.e., $GS_HOME/server/stones/<stone-name>
+  <topaz-command-line-args>  topaz options that should be passed to topaz when running
+                             running the script
+  -h, --help                 display usage message
+  -D, --debug                bring up topaz debugger in the event of a script error
+
+EXAMPLES
+  $basename superDoit
+  $basename t2f2t
+  $basename gsteststats
+-----
+%
+method
+installGsTestStats
+	(Rowan projectFromUrl: 'file:$ROWAN_PROJECTS_HOME/GsTestStats/rowan/specs/GsTestStats.ston')
+			load.
+	self stdout nextPutAll: 'GsTestStats installed'; lf.
+%
+method
+installSuperDoit
+	"Since we are using superDoit to install superDoit, we have to remove the transient
+		symbol dictionary from the symbol list before loading"
+
+	| session symbolList |
+	session := GsCurrentSession currentSession.
+	symbolList := session symbolList.
+	symbolList remove: (symbolList objectNamed: #'SuperDoit_trasientSymbolDictionary').
+	(Rowan projectFromUrl: 'file:$ROWAN_PROJECTS_HOME/superDoit/rowan/specs/SuperDoit_stone.ston')
+			load.
+	self stdout nextPutAll: 'superDoit installed'; lf.
+%
+method
+installT2f2t
+	(Rowan projectFromUrl: 'file:$ROWAN_PROJECTS_HOME/T2F2T-Conversion/rowan/specs/tonel.ston')
+			load.
+	self stdout nextPutAll: 'T2F2T-Conversion installed'; lf.
+%
+doit
+	'$ROWAN_PROJECTS_HOME' asFileReference exists
+		ifFalse: [ self error: '$ROWAN_PROJECTS_HOME is not defined' ].
+	self positionalArgs size = 0
+		ifTrue: [ self error: 'At least one project name must be specified' ].
+	self positionalArgs do: [:arg |
+		| projectName |
+		projectName := arg asLowercase.
+		(#( 'superdoit' 't2f2t' 'gsteststats') includes: projectName)
+			ifFalse: [ self error: 'Unknown project name ', projectName printString ].
+		projectName = 'superdoit' ifTrue: [ self installSuperDoit ].
+		projectName = 't2f2t' ifTrue: [ self installT2f2t ].
+		projectName = 'gsteststats' ifTrue: [ self installGsTestStats ].
+		System commit ].
+	^ true
+%
