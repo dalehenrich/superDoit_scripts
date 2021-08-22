@@ -1,11 +1,16 @@
 #!/usr/bin/env superdoit_stone
+options
+{
+	SuperDoitOptionalOptionWithRequiredArg long: 'rootPath' default: '$GS_HOME/shared/gemstone/repos/GsDevKit_SuperDoit'.
+}
+%
 usage
 -----
 USAGE $basename [--help | -h] [--debug | -D] <project-names> [-- [<stone-name> [<topaz-command-line-args>] ] ]
       $basename superDoit -- <stone-name>
-      $basename t2f2t -- <stone-name>
+      obasename t2f2t -- <stone-name>
       $basename gsteststats -- <stone-name>
-      $basename GsDevKit_SuperDoit -- <stone-name>
+      $basename GsDevKit_SuperDoit [--rootPath=<repo-root-path>] -- <stone-name>
 
 DESCRIPTION
   Install named projects (superDoit, t2f2t, gsteststats, etc.) into a Rowan stone. Projects are expected to already be present in $ROWAN_PROJECTS_HOME.
@@ -24,6 +29,8 @@ OPTIONS
                              running the script
   -h, --help                 display usage message
   -D, --debug                bring up topaz debugger in the event of a script error
+  --rootPath= <repo-root-path>
+                             Path to repository. Default is $GS_HOME/shared/gemstone/repos/GsDevKit_SuperDoit
 
 EXAMPLES
   $basename superDoit t2f2t gsteststats
@@ -31,6 +38,7 @@ EXAMPLES
   $basename t2f2t
   $basename gsteststats
   $basename GsDevKit_SuperDoit
+  $basename GsDevKit_SuperDoit --rootPath=/home/dhenrich/rogue/_homes/rogue/_issue_260/shared/gemstone/repos/GsDevKit_SuperDoit
 -----
 %
 method
@@ -62,9 +70,9 @@ method
 installGsDevKit_SuperDoit
 	"currently can only be foung on issue_321 branch ... part of Issue #260 work"
 	| rootPath specPath |
-	rootPath := '$GS_HOME/shared/gemstone/repos/GsDevKit_SuperDoit'
+	rootPath := self rootPath.
 	rootPath asFileReference exists
-		ifFalse: [ self error: 'GsDevKit_SuperDoit not present in this _home installation' ].
+		ifFalse: [ self error: 'GsDevKit_SuperDoit not present in this _home installation (', rootPath printString, ')' ].
 	specPath := rootPath, '/rowan/specs/GsDevKit.ston'.
 	(Rowan projectFromUrl: 'file:', specPath diskUrl: 'file:', rootPath)
 			load.
@@ -78,7 +86,7 @@ doit
 	self positionalArgs do: [:arg |
 		| projectName |
 		projectName := arg asLowercase.
-		(#( 'superdoit' 't2f2t' 'gsteststats') includes: projectName)
+		(#( 'superdoit' 't2f2t' 'gsteststats' 'gsdevkit_superdoit') includes: projectName)
 			ifFalse: [ self error: 'Unknown project name ', projectName printString ].
 		projectName = 'superdoit' ifTrue: [ self installSuperDoit ].
 		projectName = 't2f2t' ifTrue: [ self installT2f2t ].
