@@ -5,14 +5,16 @@ USAGE $basename [--help | -h] [--debug | -D] <project-names> [-- [<stone-name> [
       $basename superDoit -- <stone-name>
       $basename t2f2t -- <stone-name>
       $basename gsteststats -- <stone-name>
+      $basename GsDevKit_SuperDoit -- <stone-name>
 
 DESCRIPTION
   Install named projects (superDoit, t2f2t, gsteststats, etc.) into a Rowan stone. Projects are expected to already be present in $ROWAN_PROJECTS_HOME.
 
   KNOWN PROJECTS
-    superDoit   - https://github.com/dalehenrich/superDoit
-    t2f2t       - https://github.com/GsDevKit/T2F2T-Conversion
-    gsteststats - https://github.com/dalehenrich/GsTestStats
+    superDoit          - https://github.com/dalehenrich/superDoit
+    t2f2t              - https://github.com/GsDevKit/T2F2T-Conversion
+    gsteststats        - https://github.com/dalehenrich/GsTestStats
+    GsDevKit_SuperDoit - https://github.com/GsDevKit/GsDevKit_home (currently embedded)
 
 OPTIONS
   <stone-name>               Name of the GsDevKit_home stone. <stone-name> argument
@@ -28,6 +30,7 @@ EXAMPLES
   $basename superDoit
   $basename t2f2t
   $basename gsteststats
+  $basename GsDevKit_SuperDoit
 -----
 %
 method
@@ -55,6 +58,18 @@ installT2f2t
 			load.
 	self stdout nextPutAll: 'T2F2T-Conversion installed'; lf.
 %
+method
+installGsDevKit_SuperDoit
+	"currently can only be foung on issue_321 branch ... part of Issue #260 work"
+	| rootPath specPath |
+	rootPath := '$GS_HOME/shared/gemstone/repos/GsDevKit_SuperDoit'
+	rootPath asFileReference exists
+		ifFalse: [ self error: 'GsDevKit_SuperDoit not present in this _home installation' ].
+	specPath := rootPath, '/rowan/specs/GsDevKit.ston'.
+	(Rowan projectFromUrl: 'file:', specPath diskUrl: 'file:', rootPath)
+			load.
+	self stdout nextPutAll: 'GsDevKit_SuperDoit'; lf.
+%
 doit
 	'$ROWAN_PROJECTS_HOME' asFileReference exists
 		ifFalse: [ self error: '$ROWAN_PROJECTS_HOME is not defined' ].
@@ -68,6 +83,8 @@ doit
 		projectName = 'superdoit' ifTrue: [ self installSuperDoit ].
 		projectName = 't2f2t' ifTrue: [ self installT2f2t ].
 		projectName = 'gsteststats' ifTrue: [ self installGsTestStats ].
+		projectName = 'gsteststats' ifTrue: [ self installGsTestStats ].
+		projectName = 'gsdevkit_superdoit' ifTrue: [ self installGsDevKit_SuperDoit ].
 		System commit ].
 	^ true
 %
