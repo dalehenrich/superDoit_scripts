@@ -91,7 +91,6 @@ doit
 		projectName = 'superdoit' ifTrue: [ self installSuperDoit ].
 		projectName = 't2f2t' ifTrue: [ self installT2f2t ].
 		projectName = 'gsteststats' ifTrue: [ self installGsTestStats ].
-		projectName = 'gsteststats' ifTrue: [ self installGsTestStats ].
 		projectName = 'gsdevkit_superdoit' ifTrue: [ self installGsDevKit_SuperDoit ].
 		System commit ].
 	^ true
