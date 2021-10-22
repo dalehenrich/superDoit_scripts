@@ -2,6 +2,7 @@
 options
 {
 	SuperDoitOptionalOptionWithRequiredArg long: 'rootPath' default: '$GS_HOME/shared/gemstone/repos/GsDevKit_SuperDoit'.
+	SuperDoitOptionalOptionWithNoArg long: 'useFileTree'.
 }
 %
 usage
@@ -10,6 +11,7 @@ USAGE $basename [--help | -h] [--debug | -D] <project-names> [-- [<stone-name> [
       $basename superDoit -- <stone-name>
       obasename t2f2t -- <stone-name>
       $basename gsteststats -- <stone-name>
+      $basename GsDevKit_upgrade [--useFileTree] -- <stone-name>
       $basename GsDevKit_SuperDoit [--rootPath=<repo-root-path>] -- <stone-name>
 
 DESCRIPTION
@@ -19,6 +21,7 @@ DESCRIPTION
     superDoit          - https://github.com/dalehenrich/superDoit
     t2f2t              - https://github.com/GsDevKit/T2F2T-Conversion
     gsteststats        - https://github.com/dalehenrich/GsTestStats
+    GsDevKit_upgrade   - https://github.com/GsDevKit/GsDevKit_upgrade
     GsDevKit_SuperDoit - https://github.com/GsDevKit/GsDevKit_home (currently embedded)
 
 OPTIONS
@@ -33,11 +36,12 @@ OPTIONS
                              Path to repository. Default is $GS_HOME/shared/gemstone/repos/GsDevKit_SuperDoit
 
 EXAMPLES
-  $basename superDoit t2f2t gsteststats
+  $basename superDoit t2f2t gsteststats gsdevkit_upgrade
   $basename superDoit
   $basename t2f2t
   $basename gsteststats
-  $basename GsDevKit_SuperDoit
+  $basename gsdevkit_upgrade
+  $basename GsDevKit_SuperDoit [--useFileTree]
   $basename GsDevKit_SuperDoit --rootPath=/home/dhenrich/rogue/_homes/rogue/_issue_260/shared/gemstone/repos/GsDevKit_SuperDoit
 -----
 %
@@ -67,6 +71,13 @@ installT2f2t
 	self stdout nextPutAll: 'T2F2T-Conversion installed'; lf.
 %
 method
+installGsDevKit_upgrade
+  | loadSpecName |
+	loadSpecName := 'GsDevKit_upgrade_dev.ston'.
+	self useFileTree ifTrue: [ loadSpecName := 'GsDevKit_upgrade_filetree.ston' ].
+	(Rowan projectFromUrl: 'file:$ROWAN_PROJECTS_HOME/GsDevKit_upgrade/rowan/specs/', loadSpecName)		load.
+	self stdout nextPutAll: 'GsDevKit_upgrade installed'; lf.%
+method
 installGsDevKit_SuperDoit
 	"currently can only be foung on issue_321 branch ... part of Issue #260 work"
 	| rootPath specPath |
@@ -92,6 +103,7 @@ doit
 		projectName = 't2f2t' ifTrue: [ self installT2f2t ].
 		projectName = 'gsteststats' ifTrue: [ self installGsTestStats ].
 		projectName = 'gsdevkit_superdoit' ifTrue: [ self installGsDevKit_SuperDoit ].
+		projectName = 'gsdevkit_upgrade' ifTrue: [ self installGsDevKit_upgrade ].
 		System commit ].
 	^ true
 %
