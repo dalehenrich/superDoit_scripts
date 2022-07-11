@@ -9,7 +9,7 @@ usage
 -----
 USAGE $basename [--help | -h] [--debug | -D] <project-names> [-- [<stone-name> [<topaz-command-line-args>] ] ]
       $basename superDoit -- <stone-name>
-      obasename t2f2t -- <stone-name>
+      $basename t2f2t -- <stone-name>
       $basename gsteststats -- <stone-name>
       $basename GsDevKit_upgrade [--useFileTree] -- <stone-name>
       $basename GsDevKit_SuperDoit [--rootPath=<repo-root-path>] -- <stone-name>
@@ -34,6 +34,8 @@ OPTIONS
   -D, --debug                bring up topaz debugger in the event of a script error
   --rootPath= <repo-root-path>
                              Path to repository. Default is $GS_HOME/shared/gemstone/repos/GsDevKit_SuperDoit
+  -useFileTree               load GsDevKit_upgrade project from the filetree repository 
+                             (as opposed to tonel repository)
 
 EXAMPLES
   $basename superDoit t2f2t gsteststats gsdevkit_upgrade
@@ -41,7 +43,7 @@ EXAMPLES
   $basename t2f2t
   $basename gsteststats
   $basename gsdevkit_upgrade
-  $basename GsDevKit_SuperDoit [--useFileTree]
+  $basename gsdevkit_upgrade --useFileTree
   $basename GsDevKit_SuperDoit --rootPath=/home/dhenrich/rogue/_homes/rogue/_issue_260/shared/gemstone/repos/GsDevKit_SuperDoit
 -----
 %
@@ -76,7 +78,8 @@ installGsDevKit_upgrade
 	loadSpecName := 'GsDevKit_upgrade_dev.ston'.
 	self useFileTree ifTrue: [ loadSpecName := 'GsDevKit_upgrade_filetree.ston' ].
 	(Rowan projectFromUrl: 'file:$ROWAN_PROJECTS_HOME/GsDevKit_upgrade/rowan/specs/', loadSpecName)		load.
-	self stdout nextPutAll: 'GsDevKit_upgrade installed'; lf.%
+	self stdout nextPutAll: 'GsDevKit_upgrade installed'; lf.
+%
 method
 installGsDevKit_SuperDoit
 	"currently can only be foung on issue_321 branch ... part of Issue #260 work"
@@ -97,7 +100,7 @@ doit
 	self positionalArgs do: [:arg |
 		| projectName |
 		projectName := arg asLowercase.
-		(#( 'superdoit' 't2f2t' 'gsteststats' 'gsdevkit_superdoit') includes: projectName)
+		(#( 'superdoit' 't2f2t' 'gsteststats' 'gsdevkit_superdoit' 'gsdevkit_upgrade') includes: projectName)
 			ifFalse: [ self error: 'Unknown project name ', projectName printString ].
 		projectName = 'superdoit' ifTrue: [ self installSuperDoit ].
 		projectName = 't2f2t' ifTrue: [ self installT2f2t ].
